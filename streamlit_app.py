@@ -93,7 +93,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         if "translation" in message:
-            st.markdown("???? 한글 번역:")
+            st.markdown("🇰🇷 한글 번역:")
             st.markdown(message["translation"])
 
 # 사용자 입력 처리
