@@ -125,8 +125,8 @@ if st.session_state.review_word:
         st.session_state.show_meaning = True
 
     if st.session_state.show_meaning:
-        st.write(f"정의: {definition}")
-        st.write(f"번역: {translation}")
+        st.write(f"정의: \n{definition}")
+        st.write(f"번역: \n{translation}")
 
 # 사이드바에 사용 설명 추가
 #st.sidebar.title("사용 방법")
