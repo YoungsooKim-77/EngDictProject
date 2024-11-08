@@ -3,6 +3,7 @@ from openai import OpenAI
 from deep_translator import GoogleTranslator
 import sqlite3
 from datetime import datetime
+from PIL import Image
 
 # OpenAI 클라이언트 초기화
 #client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -18,6 +19,16 @@ c = conn.cursor()
 # 테이블 생성 (이미 존재하지 않는 경우)
 c.execute('''CREATE TABLE IF NOT EXISTS words
              (id INTEGER PRIMARY KEY, word TEXT, definition TEXT, translation TEXT, date_added DATE)''')
+
+# 이미지 파일 경로
+image_path = "./img/drizzlenote.png"
+
+# 이미지 로드
+image = Image.open(image_path)
+
+# 이미지 표시
+st.image(image, caption='영단어 학습', use_column_width=True)
+
 
 st.title("🎈단비노트 챗봇서비스🎈")
 
