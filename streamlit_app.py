@@ -19,7 +19,7 @@ c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS words
              (id INTEGER PRIMARY KEY, word TEXT, definition TEXT, translation TEXT, date_added DATE)''')
 
-st.title("영어사전 챗봇 (복습 및 저장 기능 포함)")
+st.title("🎈단비노트 챗봇서비스🎈")
 
 # 챗봇 응답 생성 및 번역 함수
 def get_chatbot_response(prompt):
