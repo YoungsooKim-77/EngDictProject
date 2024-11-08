@@ -4,6 +4,7 @@ from deep_translator import GoogleTranslator
 import sqlite3
 from datetime import datetime
 from PIL import Image
+import re
 
 # OpenAI 클라이언트 초기화
 #client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -26,11 +27,30 @@ image_path = "./img/drizzlenote.png"
 # 이미지 로드
 image = Image.open(image_path)
 
+# 이미지 크기 지정 (픽셀 단위)
+image_width = 1792  # 원하는 가로 크기
+image_height = 512  # 원하는 세로 크기
+
+image = image.resize((image_width, image_height))
+
 # 이미지 표시
-st.image(image, caption='영단어 학습', use_column_width=True)
+#st.image(image, caption='', use_column_width=True)
+#st.image(image, caption='', width=image_width, height=image_height)
+st.image(image, caption='')
 
+# CSS를 사용하여 제목 스타일 지정
+st.markdown("""
+    <style>
+    .title-center {
+        text-align: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-st.title("🎈단비노트 챗봇서비스🎈")
+# 가운데 정렬된 제목 표시
+st.markdown("<h1 class='title-center'>🎈단비노트 챗봇서비스🎈</h1>", unsafe_allow_html=True)
+
+#st.title("🎈단비노트 챗봇서비스🎈")
 
 # 챗봇 응답 생성 및 번역 함수
 def get_chatbot_response(prompt):
@@ -73,42 +93,43 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         if "translation" in message:
-            st.markdown("🇰🇷 한글 번역:")
+            st.markdown("???? 한글 번역:")
             st.markdown(message["translation"])
 
 # 사용자 입력 처리
 #input_text = "영어 단어를 입력하세요 (예: 'apple의 뜻', 'book 예문', 'computer 동의어')"
 input_text = "영어 단어를 입력하세요 (예: apple)"
-if prompt := st.chat_input(input_text):
-    st.session_state.review_word = None
-    # 사용자 메시지 표시 및 저장
-    st.chat_message("user").markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
+prompt = st.chat_input(input_text)
 
-    # 챗봇 응답 생성 및 번역
-    english_response, korean_response = get_chatbot_response(prompt)
+if prompt:
+    # 영어와 공백만 허용하는 정규 표현식
+    if re.match(r'^[a-zA-Z\s]+$', prompt):
+        st.session_state.review_word = None
+        # 사용자 메시지 표시 및 저장
+        st.chat_message("user").markdown(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # 챗봇 응답 표시 및 저장
-    with st.chat_message("assistant"):
-        st.markdown(english_response)
-        st.markdown("🇰🇷 한글 번역:")
-        st.markdown(korean_response)
-    st.session_state.messages.append({
-        "role": "assistant", 
-        "content": english_response,
-        "translation": korean_response
-    })
+        # 챗봇 응답 생성 및 번역
+        english_response, korean_response = get_chatbot_response(prompt)
 
-    # 단어 저장 (단어의 뜻을 물어볼 때만)
-    #if "의 뜻" in prompt:
-    #    word = prompt.split("의 뜻")[0].strip()
-    #    save_word(word, english_response, korean_response)
-    #    st.success(f"'{word}' 단어가 데이터베이스에 저장되었습니다.")
+        # 챗봇 응답 표시 및 저장
+        with st.chat_message("assistant"):
+            st.markdown(english_response)
+            st.markdown("🌐 한글 번역:")
+            st.markdown(korean_response)
+        st.session_state.messages.append({
+            "role": "assistant", 
+            "content": english_response,
+            "translation": korean_response
+        })
 
-    if "Definition:" in english_response:
-        word = prompt
-        save_word(word, english_response, korean_response)
-        st.success(f"'{word}' 단어가 데이터베이스에 저장되었습니다.")
+        # 단어 저장
+        if "Definition:" in english_response:
+            word = prompt
+            save_word(word, english_response, korean_response)
+            st.success(f"'{word}' 단어가 데이터베이스에 저장되었습니다.")
+    else:
+        st.error("영어 단어만 입력해주세요.")    
 
 # 복습 기능
 #if st.button("랜덤 단어 복습"):
