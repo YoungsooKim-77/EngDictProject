@@ -124,9 +124,13 @@ if st.session_state.review_word:
     if st.button("뜻 보기"):
         st.session_state.show_meaning = True
 
+    translation = translation.replace("정의:", "");
+
     if st.session_state.show_meaning:
-        st.write(f"정의: \n{definition}")
-        st.write(f"번역: \n{translation}")
+        st.write("정의:")
+        st.write(f"{definition}")
+        st.write("번역:")
+        st.write(f"{translation}")
 
 # 사이드바에 사용 설명 추가
 #st.sidebar.title("사용 방법")
