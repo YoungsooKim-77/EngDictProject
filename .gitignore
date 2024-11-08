@@ -1,2 +1,2 @@
-english_dictionary.db
+*.db
 .streamlit/secrets.toml
