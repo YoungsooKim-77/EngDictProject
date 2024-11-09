@@ -113,7 +113,7 @@ def get_wordInfoByWord(word):
 
 # 랜덤 단어 가져오기 함수
 def get_random_word():
-    c.execute("SELECT word, definitionContents FROM words WHERE updatedDate <= date('now', '-1 days') ORDER BY RANDOM() LIMIT 1")
+    c.execute("SELECT word, definitionContents FROM words WHERE updatedDate <= date('now', '-3 days') ORDER BY RANDOM() LIMIT 1")
     return c.fetchone()
 
 # 세션 상태 초기화
