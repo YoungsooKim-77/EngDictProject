@@ -92,8 +92,8 @@ def creat_word(word, definitionContents):
     if not word or not response:
         return False
     
-    c.execute("INSERT INTO words (word, definitionContents, createdDate, updatedDate) VALUES (?, ?, ?, ?)",
-              (word, definitionContents, datetime.now().date(), datetime.now().date()))    
+    c.execute("INSERT INTO words (word, definitionContents, createdDate, updatedDate) VALUES (?, ?, date('now'), date('now'))",
+              (word, definitionContents))    
     conn.commit()
 
     return True
@@ -103,8 +103,8 @@ def modify_word(word, definitionContents):
     if not word or not response:
         return False
     
-    c.execute("UPDATE words SET definitionContents = ?, updatedDate = ? WHERE word = ?",
-              (definitionContents, datetime.now().date(), word))
+    c.execute("UPDATE words SET definitionContents = ?, updatedDate = date('now') WHERE word = ?",
+              (definitionContents, word))
     conn.commit()
 
     return True
@@ -175,7 +175,7 @@ if prompt:
             word = prompt 
             get_word = get_wordInfoByWord(word)
             print("get_word = ", get_word)
-            remove_word()
+            #remove_word()
             if get_word == None :
                 if creat_word(word, response):  # 데이터베이스에 저장(등록)
                     st.session_state.word_saved = True
