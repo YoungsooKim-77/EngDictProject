@@ -95,6 +95,8 @@ def creat_word(word, definitionContents):
     c.execute("INSERT INTO words (word, definitionContents, createdDate, updatedDate) VALUES (?, ?, ?, ?)",
               (word, definitionContents, datetime.now().date(), datetime.now().date()))
     
+    conn.commit()
+    
     c.execute("DELETE FROM words WHERE word = ?",
               ("lable", ))
     conn.commit()
