@@ -73,11 +73,14 @@ def get_chatbot_response(prompt):
         - Word(단어)
         - This is an example.(이것은 예시입니다.)
         - To kill two birds with one stone(일석이조)
+             
+        입력한 단어가 없는 단어이거나 오타인 경우 아래와 같이 한국어 번역을 제공하세요. 예시:
+        - 오류: 입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다.
 
         모든 응답에서 이 형식을 일관되게 유지하세요."""},
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.7
+            temperature=0.5
         )
         return response.choices[0].message.content
     except Exception as e:
@@ -113,7 +116,7 @@ def get_wordInfoByWord(word):
 
 # 랜덤 단어 가져오기 함수
 def get_random_word():
-    c.execute("SELECT word, definitionContents FROM words WHERE updatedDate <= date('now', '-3 days') ORDER BY RANDOM() LIMIT 1")
+    c.execute("SELECT word, definitionContents FROM words WHERE updatedDate <= date('now', '-2 days') ORDER BY RANDOM() LIMIT 1")
     return c.fetchone()
 
 # 세션 상태 초기화
@@ -154,24 +157,24 @@ if prompt:
             st.session_state.messages.append({"role": "assistant", "content": response})
 
         # 단어 저장 버튼
-        #if st.button("단어 저장", key="save_button"):
-        word = prompt 
-        get_word = get_wordInfoByWord(word)
+        if "오류: 입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다." not in response:
+            word = prompt 
+            get_word = get_wordInfoByWord(word)
 
-        if get_word == None :
-            if creat_word(word, response):  # 데이터베이스에 저장(등록)
-                st.session_state.word_saved = True
-                st.session_state.saved_word = word
-                st.success(f"'{word}' 단어가 데이터베이스에 저장(등록)되었습니다.")
+            if get_word == None :
+                if creat_word(word, response):  # 데이터베이스에 저장(등록)
+                    st.session_state.word_saved = True
+                    st.session_state.saved_word = word
+                    st.success(f"'{word}' 단어가 데이터베이스에 저장(등록)되었습니다.")
+                else:
+                    st.error("단어 저장에 실패했습니다.")
             else:
-                st.error("단어 저장에 실패했습니다.")
-        else:
-            if modify_word(word, response):  # 데이터베이스에 저장(수정)
-                st.session_state.word_saved = True
-                st.session_state.saved_word = word
-                st.success(f"'{word}' 단어가 데이터베이스에 저장(수정)되었습니다.")
-            else:
-                st.error("단어 저장에 실패했습니다.")
+                if modify_word(word, response):  # 데이터베이스에 저장(수정)
+                    st.session_state.word_saved = True
+                    st.session_state.saved_word = word
+                    st.success(f"'{word}' 단어가 데이터베이스에 저장(수정)되었습니다.")
+                else:
+                    st.error("단어 저장에 실패했습니다.")
 
     else:
         st.error("영어 단어만 입력해주세요.")
