@@ -21,6 +21,10 @@ c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS words
              (id INTEGER PRIMARY KEY, word TEXT, definitionContents TEXT, createdDate DATE, updatedDate DATE)''')
 
+c.execute("DELETE FROM words WHERE word = ?",
+              ("lable", ))
+conn.commit()
+
 # 이미지 파일 경로
 image_path = "./img/drizzlenote.png"
 
