@@ -93,12 +93,7 @@ def creat_word(word, definitionContents):
         return False
     
     c.execute("INSERT INTO words (word, definitionContents, createdDate, updatedDate) VALUES (?, ?, ?, ?)",
-              (word, definitionContents, datetime.now().date(), datetime.now().date()))
-    
-    conn.commit()
-    
-    c.execute("DELETE FROM words WHERE word = ?",
-              ("lable", ))
+              (word, definitionContents, datetime.now().date(), datetime.now().date()))    
     conn.commit()
 
     return True
@@ -118,6 +113,18 @@ def modify_word(word, definitionContents):
 def get_wordInfoByWord(word):
     c.execute("SELECT word FROM words WHERE word = ? LIMIT 1", (word,))
     return c.fetchone()
+
+
+# 단어 삭제 함수
+def remove_word():
+    if not word or not response:
+        return False
+    
+    c.execute("DELETE FROM words WHERE word = ?",
+              ("lable", ))
+    conn.commit()
+
+    return True
 
 # 랜덤 단어 가져오기 함수
 def get_random_word():
@@ -165,7 +172,7 @@ if prompt:
         if "입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다." not in response:
             word = prompt 
             get_word = get_wordInfoByWord(word)
-
+            remove_word()
             if get_word == None :
                 if creat_word(word, response):  # 데이터베이스에 저장(등록)
                     st.session_state.word_saved = True
