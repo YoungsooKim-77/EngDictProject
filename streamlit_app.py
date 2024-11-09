@@ -157,7 +157,7 @@ if prompt:
             st.session_state.messages.append({"role": "assistant", "content": response})
 
         # 단어 저장 버튼
-        if "오류: 입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다." not in response:
+        if "입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다." not in response:
             word = prompt 
             get_word = get_wordInfoByWord(word)
 
