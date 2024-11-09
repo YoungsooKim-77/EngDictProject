@@ -111,7 +111,7 @@ def modify_word(word, definitionContents):
 
 # 조건절에 오는 단어정보 가져오기 함수
 def get_wordInfoByWord(word):
-    c.execute("SELECT word FROM words WHERE word = ? LIMIT 1", (word,))
+    c.execute("SELECT word FROM words WHERE lower(word) = lower(?) LIMIT 1", (word,))
     return c.fetchone()
 
 
@@ -122,6 +122,8 @@ def remove_word():
     
     c.execute("DELETE FROM words WHERE word = ?",
               ("lable", ))
+    c.execute("DELETE FROM words WHERE definitionContents LIKE ?",
+              ("입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다", ))
     conn.commit()
 
     return True
@@ -169,9 +171,10 @@ if prompt:
             st.session_state.messages.append({"role": "assistant", "content": response})
 
         # 단어 저장 버튼
-        if "입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다." not in response:
+        if "입력한 단어가 영어 사전에 없는 단어이거나 오타가 있습니다" not in response:
             word = prompt 
             get_word = get_wordInfoByWord(word)
+            print("get_word = ", get_word)
             remove_word()
             if get_word == None :
                 if creat_word(word, response):  # 데이터베이스에 저장(등록)
@@ -181,7 +184,7 @@ if prompt:
                 else:
                     st.error("단어 저장에 실패했습니다.")
             else:
-                if modify_word(word, response):  # 데이터베이스에 저장(수정)
+                if modify_word(get_word[0], response):  # 데이터베이스에 저장(수정)
                     st.session_state.word_saved = True
                     st.session_state.saved_word = word
                     st.success(f"'{word}' 단어가 데이터베이스에 저장(수정)되었습니다.")
